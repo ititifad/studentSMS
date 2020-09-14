@@ -1,0 +1,28 @@
+{% extends 'website/main.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+	<br>
+	<div class="card card-body">
+		<a class="btn btn-primary  btn-sm btn-block" href="{% url 'create_classroom' %}">Add Student</a>
+		<table class="table table-sm table-bordered table-striped">
+			<tr>
+				<th></th>
+				<th>Name</th>
+				<th>Student</th>
+				<th>Class Teacher</th>
+			</tr>
+			 {% for classroom in classrooms %}
+			 <tr>
+				 <td><a class="btn btn-sm btn-info" href="#">View</a></td>
+				 <td>{{classroom.name}}</td>
+				 <td>{{classroom.student}}</td>
+				 <td>{{classroom.class_teacher}}</td>
+			 </tr>
+			 {% endfor %}
+		</table>
+	</div>
+</div>
+</div>
+{% endblock %}

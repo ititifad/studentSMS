@@ -1,0 +1,39 @@
+{%  extends 'easy_pdf/base.html' %}
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Student Details</title>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+<body>
+    <div class="container">
+    <h3 style="text-align: center; color: aqua;">Student details</h3>
+    <div class="wrapper">
+        <div class="table-responsive-sm">
+			<table class="table table-sm table-striped table-bordered">
+				<tr>
+                    <th>Control No:</th>
+                    <th>Student</th>
+                    <th>Classroom</th>
+                    <th>Fee Paid</th>
+					<th>Date Paid</th>
+					<th>completed</th>
+				</tr>
+				<tr>
+                    <td>{{fee.id}}</td>
+                    <td>{{fee.student}}</td>
+                    <td>{{fee.classroom}}</td>
+                    <td>{{fee.paid_fees}}</td>
+					<td>{{fee.publish_date|date:'d F Y'}}</td>
+					<td>{{fee.completed}}</td>
+				</tr>
+			</table>
+    </div>
+    </div>
+</body>
+</html>
+{% endblock %}

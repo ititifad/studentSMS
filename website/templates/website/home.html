@@ -1,0 +1,197 @@
+{% extends 'website/main.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<main role="main" class="container">
+  <a href="{% url 'pdf' %}">
+    <i class="fas fa-file-pdf fa-4x">
+    </i>
+  </a>
+  <hr>
+  <div class="table-responsive-sm">
+    <table class="table table-sm table-striped table-bordered">
+      <tr>
+        <th>Baby class</th>
+        <th>Class 1</th>
+        <th>Class 2</th>
+        <th>Class 3</th>
+        <th>Class 4</th>
+        <th>Class 5</th>
+        <th>Class 6</th>
+        <th>Class 7</th>
+      </tr>
+      <tr>
+        <td>{{baby_class}}</td>
+        <td>{{class1}}</td>
+        <td>{{class2}}</td>
+        <td>{{class3}}</td>
+        <td>{{class4}}</td>
+        <td>{{class5}}</td>
+        <td>{{class6}}</td>
+        <td>{{class7}}</td>
+      </tr>
+    </table>
+    <hr>
+<div class="row">
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="total_students">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Total Students</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title">{{total_students}}</h3>
+			  	</div>
+			</div>
+		</div>
+  </div>
+  
+  <div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="fees_completed">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Completed Fees</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title">{{fees_completed}}</h3>
+			  	</div>
+			</div>
+		</div>
+  </div>
+
+	<div class="col">
+		<div class="col-md">
+			<div class="card text-center text-white  mb-3" id="total_fees_paid">
+			  	<div class="card-header">
+			  		<h5 class="card-title">Total Fees Paid</h5>
+			  	</div>
+			  	<div class="card-body">
+			    	<h3 class="card-title">{{total_fees_paid}}</h3>
+			  	</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<hr>
+
+    <h3 style="text-align: center;">Search Students</h3>
+    <hr>
+    <form method="GET" action=".">
+      <div class="form-row">
+          <div class="form-group col-12">
+              <div class="input-group">
+                  <input class="form-control py-2 border-right-0 border" type="search" name="student_contains" placeholder="Enter Student ID..." />
+                  <span class="input-group-append">
+                      <div class="input-group-text bg-transparent">
+                          <i class="fa fa-search"></i>
+                      </div>
+                  </span>
+              </div>
+          </div>        
+      </div>
+      <hr>
+      <!--<div class="form-row">
+          <div class="form-group col-12">
+              <div class="input-group">
+                  <input class="form-control py-2 border-right-0 border" type="search" name="title_or_author" placeholder="Title or author..." />
+                  <span class="input-group-append">
+                      <div class="input-group-text bg-transparent">
+                          <i class="fa fa-search"></i>
+                      </div>
+                  </span>
+              </div>
+          </div>        
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-2 col-lg-2.4">
+          <label for="publishDateMin">Minimum Date</label>
+          <input type="date" class="form-control" id="publishDateMin" name="date_min">
+        </div>
+        <div class="form-group col-md-2 col-lg-2.4">
+          <label for="publishDateMax">Maximum Date</label>
+          <input type="date" class="form-control" id="publishDateMax" name="date_max">
+        </div>-->
+        <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="category">Classroom</label>
+          <select id="category" class="form-control" name="classroom">
+            <option selected>Choose...</option>
+            {% for cls in classrooms %}
+            <option value="{{ cls }}">{{ cls }}</option>
+            {% endfor %}
+          </select>
+        </div>
+      <div class="form-group col-md-4">
+        <label for="student">Students</label>
+        <select id="student" class="form-control" name="student">
+          <option selected>Choose...</option>
+          {% for sts in students %}
+          <option value="{{ sts }}">{{ sts }}</option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="phase">Phase</label>
+        <select id="phase" class="form-control" name="phase">
+          <option selected>Choose...</option>
+          {% for phase in phases %}
+          <option value="{{ phase }}">{{ phase }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      </div>
+
+      <div class="form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="completed" name="completed">
+          <label class="form-check-label" for="completed">
+            Completed Fee
+          </label>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="notCompleted" name="notCompleted">
+          <label class="form-check-label" for="notCompleted">
+            Not Completed
+          </label>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary">Search</button>
+    </form>
+
+    <hr />
+    
+      <div class="table-responsive-sm">
+			<table class="table table-sm table-striped table-bordered">
+				<tr>
+          <th></th>
+          <th>Roll No:</th>
+          <th>Student</th>
+          <th>Classroom</th>
+          <th>Fee Paid</th>
+					<th>Date Paid</th>
+					<th>completed</th>
+					<th>Update</th>
+					<th>Remove</th>
+				</tr>
+				{% for fee in queryset %}
+				<tr>
+          <td><a class="btn btn-sm btn-info" href="{% url 'pdf-detail' fee.id  %}">Print</a></td>
+          <td>{{fee.id}}</td>
+          <td><a href="{% url 'fee-detail' fee.id %}">{{fee.student}}</a></td>
+          <td>{{fee.classroom}}</td>
+          <td>{{fee.paid_fees}}</td>
+					<td>{{fee.publish_date|date:'d F Y'}}</td>
+					<td>{{fee.completed}}</td>
+					<td><a class="btn btn-sm btn-info" href="{% url 'update_fee' fee.id %}">Update</a></td>
+					<td><a  class="btn btn-sm btn-danger" href="{% url 'delete_fee' fee.id %}">Delete</a></td>
+				</tr>
+				
+				{% endfor %}
+			</table>
+
+
+{% endblock %}

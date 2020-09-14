@@ -1,0 +1,37 @@
+{%  extends 'website/main.html' %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+		<form method="POST" action="">
+			{% csrf_token %}
+			{{form|crispy}}
+			<input class="btn btn-primary" type="submit" value="search" />
+		</form>
+		<br>
+		<div class="card card-body">
+			<a class="btn btn-primary  btn-sm btn-block" href="{% url 'create_student' %}">Add Student</a>
+			<table class="table table-sm table-bordered table-striped">
+				<tr>
+					<th></th>
+					<th>Student</th>
+                    <th>Phone</th>
+                    <th>Gender</th>
+                    <th>Email</th>
+                    <th>Location</th>
+				</tr>
+				 {% for student in students %}
+				 <tr>
+					 <td><a class="btn btn-sm btn-info" href="{% url 'student' student.id %}">View</a></td>
+					 <td>{{student.name}}</td>
+                     <td>{{student.phone_number}}</td>
+                     <td>{{student.gender}}</td>
+                     <td>{{student.email}}</td>
+                     <td>{{student.location}}</td>
+				 </tr>
+				 {% endfor %}
+			</table>
+		</div>
+    </div>
+</div>
+{% endblock %}

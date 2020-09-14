@@ -1,0 +1,28 @@
+{% extends 'website/main.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<div class="table-responsive-sm">
+    <table class="table table-sm table-striped table-bordered">
+        <tr>
+            <th>Roll No:</th>
+            <th>Student</th>
+            <th>Classroom</th>
+            <th>Fee Paid</th>
+            <th>Date Paid</th>
+            <th>completed</th>
+            <th>Update</th>
+            <th>Remove</th>
+        </tr>
+        <tr>
+            <td>{{fee.id}}</td>
+            <td>{{fee.student}}</td>
+            <td>{{fee.classroom}}</td>
+            <td>{{fee.paid_fees}}</td>
+            <td>{{fee.publish_date|date:'d F Y'}}</td>
+            <td>{{fee.completed}}</td>
+            <td><a class="btn btn-sm btn-info" href="{% url 'update_fee' fee.id %}">Update</a></td>
+            <td><a  class="btn btn-sm btn-danger" href="{% url 'delete_fee' fee.id %}">Delete</a></td>
+        </tr>
+    </table>
+{% endblock %}

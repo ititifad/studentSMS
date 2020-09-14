@@ -1,0 +1,88 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Students Management System</title>
+    <script src="https://kit.fontawesome.com/b99e675b6e.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'website/main.css' %}">
+    <link rel="stylesheet" href="{% static 'website/main.js' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+</head>
+<body>
+
+<div class="wrapper">
+    <div class="sidebar">
+        <div class="toggle-btn" onclick="toggleSidebar()">
+        <ul>
+            <li><a href="{% url 'home' %}"><i class="fas fa-home"></i>Home</a></li>
+            <li><a href="{% url 'students' %}"><i class="fas fa-user"></i>Students</a></li>
+            <li><a href="{% url 'classroom' %}"><i class="fas fa-address-card"></i>Classrooms</a></li>
+            <li><a href="#"><i class="fas fa-project-diagram"></i>Staff</a></li>
+            <li><a href="#"><i class="fas fa-blog"></i>API</a></li>
+            <li><a href="#"><i class="fas fa-address-book"></i>MEDIA</a></li>
+            <li><a href="#"><i class="fas fa-map-pin"></i>Map</a></li>
+        </ul> 
+        <div class="social_media">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+      </div>
+    </div>
+    </div>
+    <div class="main_content">
+        {% load static %}
+
+<style>
+  .hello-msg{
+    color: aliceblue;
+    font-size: 18px;
+    margin-right: 20px;
+  }
+</style>
+<nav class="navbar navbar-expand-lg fixed-top">
+    <div>
+        <a href="{% url 'home' %}">
+          <img class="circular" src="/media/profile_pics/glogo.png" width="60" height="60">
+        </a>
+      </div>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav">
+        {% if request.user.is_staff %}
+        <li class="nav-item active">
+          <a class="nav-link text-white" href="#">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="#">Website</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-outline-primary text-white" href="#">Send Notification</a>
+        </li>
+
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link text-white" href="#">Website</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+    <span class='hello-msg'>Hello, {{request.user}}</span>
+    <span><a class="hello-msg" href="{% url 'login' %}">Logout</a></span>
+  </nav>
+ 
+        <div class="info">
+          {% block content %}{% endblock %}
+      </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
+
+</body>
+</html>

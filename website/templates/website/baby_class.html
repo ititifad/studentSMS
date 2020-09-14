@@ -1,0 +1,26 @@
+{% extends "website/main.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<div class="container">
+	<form method="POST" action="">
+		{% csrf_token %}
+		{{form|crispy}}
+		<input class="btn btn-primary" type="submit" value="search" />
+	</form>
+	<br>
+	<div class="card card-body">
+		<a class="btn btn-primary  btn-sm btn-block" href="#">Add Student</a>
+		<table class="table table-sm table-bordered table-striped">
+			<tr>
+				<th></th>
+				<th>Name</th>
+            </tr>
+			 <tr>
+				 <td><a class="btn btn-sm btn-info" href="#">View</a></td>
+				 <td>{{students}}</td>
+             </tr>
+		</table>
+	</div>
+</div>
+</div>
+{% endblock %}
