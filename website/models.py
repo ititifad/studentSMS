@@ -79,6 +79,16 @@ class Fee(models.Model):
     def save(self, *args, **kwargs):
         self.remaining_fees = self.school_fees - self.paid_fees
         super().save( *args, **kwargs)
+        
+    def save(self, *args, **kwargs):
+        self.remaining_fees = self.school_fees - self.paid_fees
+        if self.remaining_fees == 0:
+            self.completed = True
+        else:
+            self.completed = False
+            
+        super().save(*args, **kwargs)
+
     
     def __str__(self):
         return str(self.student.name)
