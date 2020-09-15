@@ -81,6 +81,9 @@ class Fee(models.Model):
         super().save( *args, **kwargs)
         
     def save(self, *args, **kwargs):
+        self.first_record = student.fee_set.first()
+        self.paid_fees = student.fee_set.aggregate(total_paid_fees=sum('paid_fees'))
+        self.school_fees = first_record.school_fees
         self.remaining_fees = self.school_fees - self.paid_fees
         if self.remaining_fees == 0:
             self.completed = True
