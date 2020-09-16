@@ -302,7 +302,7 @@ def Logout(request):
     logout(request)
     return redirect('login')
 
-def student_detail(request, pk):
+def Student_detail(request, pk):
     student = Student.objects.get(id=pk)
     
     first_record = student.fee_set.first()

@@ -17,7 +17,7 @@ urlpatterns = [
     path('fee/<int:pk>/', FeeDetailView.as_view(), name='fee-detail'),
     path('login/', views.user_login, name='login'),
     path('logout/', views.logout, name='logout'),
-    path('student_detail/<str:pk>/', views.student_detail, name="student-detail"),
+    path('student_detail/<str:pk>/', views.Student_detail, name="student_detail"),
     path('update/<str:pk>/', views.UpdateStudent, name="update-student")
     
 ]

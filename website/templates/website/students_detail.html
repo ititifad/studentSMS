@@ -1,12 +1,28 @@
 {%  extends 'website/main.html' %}
 
 {% block content %}
-
-<h1>Student Detail</h1>
-<p>Student name: {{ student.name }}</p>
-<p>School fees: {{ school_fees }}</p>
-<p>Paid fees: {{ paid_fees.total_paid_fees }}</p>
-<p>Remaining fees: {{ balance_fees }}</p>
-
-
+<div class="container">
+    <h1 style="text-align: center;color: rgb(39, 37, 37);">Student Fee Detail</h1>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead class="black white-text">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">School Fees</th>
+                    <th scope="col">Paid Fees</th>
+                    <th scope="col">Remaining Fees</th>
+                </tr>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>{{ student.name }}</td>
+                        <td>{{ school_fees }}</td>
+                        <td>{{ paid_fees.total_paid_fees }}</td>
+                        <td>{{ balance_fees }}</td>
+                    </tr>
+                </tbody>
+            </thead>
+        </table>
+    </div>
 {% endblock %}

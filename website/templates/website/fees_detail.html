@@ -1,3 +1,40 @@
+{%  extends 'website/main.html' %}
+
+{% block content %}
+<div class="container">
+    <h1 style="text-align: center;color: rgb(39, 37, 37);">Student Fee Detail</h1>
+    <div class="table-responsive text-nowrap">
+        <table class="table">
+            <thead class="black white-text">
+                <tr>
+                    <th scope="col">#</th>
+                    <th>Student</th>
+                    <th>Classroom</th>
+                    <th>Fee Paid</th>
+                    <th>Date Paid</th>
+                    <th>completed</th>
+                    <th>Update</th>
+                    <th>Remove</th>
+
+                </tr>
+                <tbody>
+                    <tr>
+                        <th scope="row">1</th>
+                        <td>{{fee.id}}</td>
+                        <td>{{fee.student}}</td>
+                        <td>{{fee.classroom}}</td>
+                        <td>{{fee.paid_fees}}</td>
+                        <td>{{fee.publish_date|date:'d F Y'}}</td>
+                        <td>{{fee.completed}}</td>
+                        <td><a class="btn btn-sm btn-info" href="{% url 'update_fee' fee.id %}">Update</a></td>
+                        <td><a  class="btn btn-sm btn-danger" href="{% url 'delete_fee' fee.id %}">Delete</a></td>
+                    </tr>
+                </tbody>
+            </thead>
+        </table>
+    </div>
+{% endblock %}
+
 {% extends 'website/main.html' %}
 {% load crispy_forms_tags %}
 {% block content %}
