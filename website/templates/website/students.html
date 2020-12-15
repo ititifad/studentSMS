@@ -13,7 +13,7 @@
 		<div class="card card-body">
 			<h5>Student:</h5>
 			<hr>
-			<a class="btn btn-outline-info  btn-sm btn-block" href="#">Update Student</a>
+			
 			<a class="btn btn-outline-info  btn-sm btn-block" href="{% url 'create_fee' student.id %}">Add Fee</a>
 
 		</div>
@@ -92,5 +92,73 @@
 		</div>
 	</div>
 </div>
+<br>
+<hr>
+<h2 style="text-align: center;">Student Results</h2>
+<div class="container">
+	{% for message in messages %}
+	<p id="messages">{{message}}</p>
+	{% endfor %}
+<div class="row">
+	<div class="col-md-4">
+		<div class="card card-body">
+			<h5>Student: <span>{{student}}</span></h5>
+			<h5>Class: <span>{{student.classroom}}</span></h5>
+			<h5>Total Score: <span>{{total_score}}</span></h5>
+			<h5>Passed: <span>{{status}}</span></h5>
+			<hr>
+			<a class="btn btn-outline-info  btn-sm btn-block" href="#">Update Results</a>
+			<a class="btn btn-outline-info  btn-sm btn-block" href="{% url 'add_result' student.id %}">Add Results</a>
+
+		</div>
+	</div>
+
+<!--
+
+<br>
+<div class="row">
+	<div class="col">
+		<div class="card card-body">
+			<form method="get">
+			  {{myFilter.form}}
+			<button class="btn btn-primary" type="submit">Search</button>
+		  </form>
+		</div>
+	</div>
+	
+</div>-->
+<br>
+
+
+
+	<div class="col-md-8">
+		<div class="card card-body">
+			<table class="table table-sm">
+				<tr>
+
+					<th></th>
+					<th>Subject</th>
+					<th>Score</th>
+					<th>Type</th>
+					<th>Status</th>
+				</tr>
+	
+				{% for result in results %}
+				<tr>
+					<td></td>
+					<td>{{result.subject}}</td>
+					<td>{{result.score}}</td>
+					<td>{{result.type}}</td>
+					<td>{{result.status}}</td>
+				</tr>
+				{% endfor %}
+	
+			</table>
+		</div>
+	</div>
+	</div>
+</div>
+</body>
+</html>			
 
 {% endblock %}

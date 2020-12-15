@@ -1,0 +1,156 @@
+{% extends "website/main.html" %}
+{% block content %}
+
+<br>
+<div class="container">
+    <button class="btn btn-outline-warning text-white">
+    <a href="{% url 'account' %}"> &#8592; Go to Profile</a>
+    </button>
+    {% for message in messages %}
+    <p id="messages">{{message}}</p>
+    {% endfor %}			
+<div class="row">
+<div class="col-lg-4">
+    <div class="card card-body">
+        <h5>Contact Information</h5>
+        <hr>
+        <p>Classroom: {{classroom}}</p>
+        <p>Phone: {{phone_number}}</p>
+    </div>
+</div>
+
+<div class="col-lg-4">
+    <div class="card card-body">
+        <h5>Total Fee Paid</h5>
+        <hr>
+        <h1 style="text-align: center;padding: 10px">{{ paid_fees.total_paid_fees}}</h1>
+    </div>
+</div>
+<div class="col-lg-4">
+<div class="card card-body">
+    <h5>Remaining Fee</h5>
+    <hr>
+    <h1 style="text-align: center;padding: 10px">{{ balance_fees }}</h1>
+</div>
+</div>
+</div>
+
+<br>
+
+<div class="row">
+<div class="col-md">
+    <div class="card card-body">
+        <table class="table table-sm">
+            <tr>
+                <th>Student</th>
+                <th>Classroom</th>
+                <th>Fee Paid</th>
+                <th>Date Paid</th>
+                <th>School Fees</th>
+            </tr>
+
+            {% for fee in fees %}
+
+            <tr>
+                <td>{{fee.student}}</td>
+                <td>{{fee.classroom}}</td>
+                <td>{{fee.paid_fees}}</td>
+                <td>{{fee.publish_date}}</td>
+                <td>{{fee.school_fees}}</td>
+            </tr>
+            {% endfor %}
+
+        </table>
+    </div>
+</div>
+</div>
+<h2 style="text-align: center;">Student Results</h2>
+<div class="container">
+	{% for message in messages %}
+	<p id="messages">{{message}}</p>
+	{% endfor %}
+<div class="row">
+	<div class="col-md-4">
+		<div class="card card-body">
+			<h5>Student: <span>{{user.username}}</span></h5>
+			<h5>Total Score: <span>{{total_score}}</span></h5>
+			<h5>Passed: <span>{{status}}</span></h5>
+			<hr>
+
+		</div>
+	</div>
+
+<!--
+
+<br>
+<div class="row">
+	<div class="col">
+		<div class="card card-body">
+			<form method="get">
+			  {{myFilter.form}}
+			<button class="btn btn-primary" type="submit">Search</button>
+		  </form>
+		</div>
+	</div>
+	
+</div>-->
+<br>
+
+	<div class="col-md-8">
+		<div class="card card-body">
+			<table class="table table-sm table-stripped table-bordered">
+				<tr>
+
+					<th></th>
+					<th>Subject</th>
+					<th>Score</th>
+					<th>Type</th>
+					<th>Status</th>
+				</tr>
+	
+				{% for result in results %}
+				<tr>
+					<td></td>
+					<td>{{result.subject}}</td>
+					<td>{{result.score}}</td>
+					<td>{{result.type}}</td>
+					<td>{{result.status}}</td>
+				</tr>
+				{% endfor %}
+	
+			</table>
+		</div>
+	</div>
+	</div>
+</div>
+	<div style="width: 75%;">
+		<canvas id="pie-chart"></canvas>
+	  </div>
+	
+	  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+	  <script>
+	
+		var config = {
+		  type: 'doughnut',
+		  data: {
+			datasets: [{
+			  data: {{ data|safe }},
+			  backgroundColor: [
+				'#FF6384', '#9966FF', '#4BC0C0', '#FF9F40', '#FFCD56', '#C6DDDD'
+			  ],
+			  label: 'Population'
+			}],
+			labels: {{ labels|safe }}
+		  },
+		  options: {
+			responsive: true
+		  }
+		};
+	
+		window.onload = function() {
+		  var ctx = document.getElementById('pie-chart').getContext('2d');
+		  window.myPie = new Chart(ctx, config);
+		};
+	
+	  </script>
+{% endblock %}

@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import ModelForm
+from django.contrib.auth.forms import UserCreationForm
 from .models import *
 
 class FeeForm(forms.ModelForm):
@@ -35,6 +36,27 @@ class ClassroomSearchForm(forms.ModelForm):
         model = Classroom
         fields = ['name']
 
-class LoginForm(forms.Form):
-    username = forms.CharField()
-    password = forms.CharField(widget=forms.PasswordInput)
+#class LoginForm(forms.Form):
+    #username = forms.CharField()
+    #password = forms.CharField(widget=forms.PasswordInput)
+    
+class CreateUserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ['username', 'email', 'password1', 'password2']
+        
+class StudentsForm(ModelForm):
+    class Meta:
+        model = Student
+        fields = '__all__'
+        exclude = ['user', 'results', 'reports']
+        
+class StaffForm(forms.ModelForm):
+    class Meta:
+        model = Teacher
+        fields = '__all__'
+        
+class ResultsForm(forms.ModelForm):
+    class Meta:
+        model = Result
+        fields = '__all__'

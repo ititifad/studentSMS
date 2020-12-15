@@ -12,19 +12,20 @@ class Student(models.Model):
         ('Female', 'Female'),
         )
     user = models.OneToOneField(User, null=True, blank=True, on_delete=models.CASCADE)
-    name = models.CharField(max_length=200, null=True, blank=True)
-    classroom = models.ForeignKey('Classroom', on_delete=models.DO_NOTHING, blank=True, null=True)
+    name = models.CharField(max_length=200, null=True)
+    classroom = models.ForeignKey('Classroom', on_delete=models.DO_NOTHING,null=True)
     phone_number = PhoneNumberField(null=True)
-    gender = models.CharField(max_length=50, null=True, choices=GENDER, blank=True)
+    gender = models.CharField(max_length=50, null=True, choices=GENDER)
     location = models.CharField(max_length=50, blank=True)
-    profile_pic = models.ImageField(default='default.png',upload_to='profile_pics')
+    profile_pic = models.ImageField(default='default.png',upload_to='profile_pics', null=True, blank=True)
+    reports = models.FileField(upload_to='reports', null=True)
+    results = models.FileField(upload_to='results', blank=True)
     publish_date = models.DateTimeField(auto_now_add=True)
     
     def __str__(self):
         return str(self.name)
-    
-    def __str__(self):
-        return self.name
+
+
     def get_total_fee(self):
         return sum(student.school_fees for student in self.fee_set.all())
     def get_total_paid_fee(self):
@@ -49,6 +50,61 @@ class Classroom(models.Model):
     )
     name = models.CharField(max_length=40, choices=CLASSES, blank=True, null=True)
     
+
+    def __str__(self):
+        return str(self.name)
+
+#class Subject(models.Model):
+    #subject_name = models.CharField(max_length=100)
+    #subject_code = models.IntegerField()
+    #subject_creation_date = models.DateTimeField(auto_now=False, auto_now_add=True)
+    ##subject_update_date = models.DateTimeField(auto_now=True, auto_now_add=False)
+
+    #def __str__(self):
+        #return self.subject_name
+
+
+#class SubjectCombination(models.Model):
+    #select_class = models.ForeignKey(Classroom, on_delete=models.CASCADE)
+    #select_subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
+    
+    #def __str__(self):
+        #return '%s Section-%s'%(self.select_class.name, self.select_class.section)
+
+class Result(models.Model):
+    STATUS =(
+        (None, 'Select status'),
+        ('Pass', 'Pass'),
+        ('Fail', 'Fail'),
+        )
+    SUBJECT=(
+        (None, 'Select subjects'),
+        ('English', 'English'),
+        ('Mathematics', 'Mathematics'),
+        ('Swahili', 'Swahili'),
+        ('Science', 'Science'),
+        ('Sports', 'Sports'),
+    )
+    student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True,)
+    classroom = models.ForeignKey(Classroom, on_delete=models.CASCADE, null=True)
+    #subject = models.ForeignKey(Subject, on_delete=models.DO_NOTHING, null=True)
+    subject = models.CharField(max_length=50, blank=True, choices=SUBJECT, null=True)
+    score = models.IntegerField(null=True, blank=True, default=0)
+    language = models.CharField(max_length=50, blank=True)
+    type = models.CharField(max_length=50, null=True)
+    status = models.CharField(max_length=50, null=True, blank=True, choices=STATUS)
+    publish_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return str(self.student.name)
+
+        
+class Teacher(models.Model):
+    name = models.CharField(max_length=200, null=True, blank=True)
+    title = models.CharField(max_length=200, null=True)
+    classroom = models.ForeignKey(Classroom, on_delete=models.DO_NOTHING, null=True)
+    phone_number = PhoneNumberField(null=True)
+    image = models.ImageField(default="/profile_pics/glogo.png", null=True, blank=True)
     
     def __str__(self):
         return str(self.name)
@@ -92,3 +148,4 @@ class Fee(models.Model):
     
     def __str__(self):
         return str(self.student.name)
+

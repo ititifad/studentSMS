@@ -1,0 +1,30 @@
+{% extends 'website/main.html' %}
+{% load static %}
+{% block content %}
+    <hr>
+	<div class="row">
+		{% for teacher in teachers %}
+		<div class="col-lg-3">
+            <div class="card text-center" style="width: 18rem;">
+            <img class="thumbnail card-img-top" src="{{teacher.image.url}}">
+			<div class="box-element product">
+				<h6><strong>{{teacher.name}}</strong></h6>
+				<hr>
+                <h6><strong>{{teacher.title}}</strong></h6>
+				<hr>
+                <h4><strong>{{teacher.phone_number}}</strong></h4>
+                <hr>
+                <div class="text-center">
+                <a type="button" class="btn-floating btn-small btn-fb"><i class="fab fa-facebook-f"></i></a>
+                Twitter 
+                <a type="button" class="btn-floating btn-small btn-tw"><i class="fab fa-twitter"></i></a>
+                 Google + 
+                <a type="button" class="btn-floating btn-small btn-dribbble"><i class="fab fa-dribbble"></i></a>
+                </div>
+			</div>
+        </div>
+		</div>
+        {% endfor %}
+    </div>
+
+{% endblock content %}

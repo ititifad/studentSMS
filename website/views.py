@@ -1,11 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, HttpResponseRedirect
 from .forms import (
     FeeForm, StudentForm, 
     StudentSearchForm, 
     StudentFeeSearchForm,
     ClassroomForm, 
     ClassroomSearchForm,
-    LoginForm
+    CreateUserForm,
+    StudentsForm, 
+    StaffForm,
+    ResultsForm
 )
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
@@ -13,11 +16,16 @@ from .models import *
 from django.contrib import messages
 from django.db.models import Sum, Count
 from django.db.models import Q, F, FloatField, ExpressionWrapper
-from django.views.generic import View, DetailView
+from django.views.generic import View, DetailView, ListView
 from easy_pdf.views import PDFTemplateResponseMixin
 from django.template.loader import get_template
 from .utils import render_to_pdf
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.models import Group
+from django.contrib.auth.forms import UserCreationForm
+from .decorators import allowed_users, admin_only
+from django.urls import reverse_lazy
+from django.forms import inlineformset_factory
 
 class GeneratePdf(View):
     def get(self, request, *args, **kwargs):
@@ -32,7 +40,9 @@ class GeneratePdf(View):
     
 def is_valid_queryparam(param):
     return param != '' and param is not None
-#@login_required(login_url='login')
+
+@login_required(login_url='login')
+@admin_only
 def home(request):
     form = StudentFeeSearchForm(request.POST or None)
     qs = Fee.objects.all().order_by('-publish_date')
@@ -121,9 +131,84 @@ def home(request):
         }
     return render(request, 'website/home.html', context)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['student'])
+def UserPage(request):
+    fees = request.user.student.fee_set.all()
+    results = request.user.student.result_set.all()
+    labels = []
+    data = []
+    result = Result.objects.all()
+    
+    
+    first_record = request.user.student.fee_set.first()
+    school_fees = first_record.school_fees
+    
+    classroom = request.user.student.classroom
+    phone_number = request.user.student.phone_number
+    
+    paid_fees = request.user.student.fee_set.all().aggregate(total_paid_fees=Sum('paid_fees'))
+    
+    balance_fees =  school_fees - paid_fees["total_paid_fees"]
+    
+    if balance_fees == 0:
+        messages.info(request, 'Student School fees is Completed')
+    
+    #total_fees =  student.fee_set.all().filter(student__id=pk).aggregate(sum=Sum('paid_fees', flat=True))['sum']
+    total_score = results.aggregate(sum=Sum('score'))['sum']
+    for result in results:
+        labels.append(result.subject)
+        data.append(result.score)
+    
+    if total_score > 100:
+        messages.info(request, 'Student has passed the examination')
+    else:
+        messages.info(request, 'Student has failed')
+        
+    status = ''
+    if total_score > 100:
+        status= 'YES'
+    else:
+        status = 'NO'
+        
+    context={'fees': fees,
+            "paid_fees": paid_fees,
+            "school_fees": school_fees,
+            "balance_fees": balance_fees,
+            "classroom": classroom,
+            "phone_number": phone_number,
+            'results': results,
+            'total_score': total_score,
+            'status': status,
+            'labels': labels,
+            'data': data
+            }
+    
+    return render(request, 'website/user.html', context)
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['student'])
+def AccountSettings(request):
+    student = request.user.student
+    student_results = request.user.student.results
+    student_reports = request.user.student.reports
+    form = StudentsForm(instance=student)
+    
+    if request.method == 'POST':
+        form = StudentsForm(request.POST ,request.FILES, instance=student)
+        if form.is_valid():
+            form.save()
+            
+    context={'form': form, 'student_results': student_results, 'student_reports': student_reports}
+    return render(request, 'website/account_settings.html', context)
+
+
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def student(request, pk):
     qs = Fee.objects.all()
     student = Student.objects.get(id=pk)
+    result = Result.objects.all()
     
     fees = student.fee_set.all().order_by('-publish_date')
     #total_fees =  student.fee_set.all().filter(student__id=pk).aggregate(sum=Sum('paid_fees', flat=True))['sum']
@@ -137,13 +222,31 @@ def student(request, pk):
     if balance_fees == 0:
         messages.info(request, 'Student School fees is Completed')
    
+    results = student.result_set.all()
+    #total_fees =  student.fee_set.all().filter(student__id=pk).aggregate(sum=Sum('paid_fees', flat=True))['sum']
+    
+    total_score = student.result_set.all().aggregate(sum=Sum('score'))['sum']
+    
+    #if total_score > 100:
+        #messages.info(request, 'Student has passed the examination')
+    #else:
+        #messages.info(request, 'Student has failed')
         
+    #status = ''
+    #if total_score > 100:
+        #status= 'YES'
+    #else:
+        #status = 'NO'
     
     context = {"student": student,
                'fees': fees,
                "paid_fees": paid_fees,
                "school_fees": school_fees,
-               "balance_fees": balance_fees, }
+               "balance_fees": balance_fees,
+               'results': results,
+               'total_score': total_score,
+               #'status': status
+               }
 
     #context = {
         #'student' : student,
@@ -151,7 +254,8 @@ def student(request, pk):
         #'total_fees' : total_fees,
     return render(request, 'website/students.html', context)
 
-
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def students(request):
     form = StudentSearchForm(request.POST or None)
     students = Student.objects.all()
@@ -171,6 +275,8 @@ def students(request):
         }
     return render(request, 'website/student.html', context)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def createFee(request, pk):
     student = Student.objects.get(id=pk)
     form = FeeForm(initial={'student':student})
@@ -182,6 +288,8 @@ def createFee(request, pk):
     context = {'form':form}
     return render(request, 'website/fee_form.html', context)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def UpdateFee(request, pk):
 	fee = Fee.objects.get(id=pk)
 	form = FeeForm(instance=fee)
@@ -196,6 +304,8 @@ def UpdateFee(request, pk):
 	context = {'form':form}
 	return render(request, 'website/fee_form.html', context)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def deleteFee(request, pk):
 	fee = Fee.objects.get(id=pk)
 	if request.method == "POST":
@@ -218,6 +328,8 @@ def createStudent(request):
     }
     return render(request, 'website/student_form.html', context)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def UpdateStudent(request, pk):
     student = Student.objects.get(id=pk)
     form = StudentForm(instance=student)
@@ -226,10 +338,14 @@ def UpdateStudent(request, pk):
         form = StudentForm(request.POST, instance=student)
         if form.is_valid():
             form.save()
-            return redirect('/')
+            return HttpResponseRedirect(reverse_lazy('home'))
+        else:
+            form = StudentForm()
         context = {'form':form}
         return render(request, 'website/student_form.html', context)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def classrooms(request):
     qs = Fee.objects.all()
     form = ClassroomSearchForm(request.POST or None)
@@ -248,6 +364,8 @@ def classrooms(request):
         }
     return render(request, 'website/classroom.html', context)
 
+@login_required(login_url='login')
+@allowed_users(allowed_roles=['admin'])
 def createClassroom(request):
     qs = Fee.objects.all()
     students = Student.objects.all()
@@ -268,35 +386,60 @@ def createClassroom(request):
     }
     return render(request, 'website/classroom_form.html', context)
 
+
 class PdfDetail(PDFTemplateResponseMixin, DetailView):
     model = Fee
     template_name = 'website/fee_detail.html'
 
 class FeeDetailView(DetailView):
     model = Fee
+
+#user Register
+
+def Register(request):
+    if request.user.is_authenticated:
+        return redirect('home')
+    else:
+        form =  CreateUserForm()
+        if request.method == 'POST':
+            form =  CreateUserForm(request.POST)
+            if form.is_valid():
+                user=form.save()
+                username = form.cleaned_data.get('username')
+                
+                group = Group.objects.get(name='student')
+                user.groups.add(group)
+                Student.objects.create(
+                    user=user
+                )
+                
+                messages.success(request, 'Account was created for ' + username)
+                
+                return redirect('login')
+            
+    context = {
+        'form': form
+    }
+    return render(request, 'website/register.html', context)
     
 # LOGIN FORM SECTION
 def user_login(request):
-    if request.method == 'POST':
-        form = LoginForm(request.POST)
-        if form.is_valid():
-            cd = form.cleaned_data
-            user = authenticate(request,
-                                username=cd['username'],
-                                password=cd['password'])
+    if request.user.is_authenticated:
+        return redirect('home')
+    else:
+        if request.method == 'POST':
+            username = request.POST.get('username')
+            password = request.POST.get('password')
+            user = authenticate(request, username=username, password=password)
             
             if user is not None:
-                if user.is_active:
-                    login(request, user)
-                    return redirect('home')
-                else:
-                    return HttpResponse('Disabled Account')
+                login(request, user)
+                return redirect('home')
             else:
-                 return HttpResponse('Invalid login')
-    else:
-        form = LoginForm()
-    return render(request, 'website/login.html', {'form':form})
-
+                messages.info(request, 'Username Or Password is incorrect')
+            
+        context={}
+        return render(request, 'website/login.html', context)
 
 def Logout(request):
     logout(request)
@@ -319,3 +462,64 @@ def Student_detail(request, pk):
 
     
     return render(request, 'website/students_detail.html', context)
+
+class TeacherListView(ListView):
+    model = Teacher
+    template_name = 'website/teachers.html'
+    context_object_name = 'teachers'
+    
+def addStaff(request):
+    form = StaffForm()
+    if request.method=='POST':
+        form=StaffForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('teachers')
+
+    context={
+        'form': form
+    }
+    return render(request, 'website/staff_form.html', context)
+
+def pie_chart(request):
+    labels = []
+    data = []
+    
+    queryset = Result.objects.order_by('-score')[:5]
+    for result in queryset:
+        labels.append(result.subject)
+        data.append(result.score)
+        
+    return render(request, 'website/pie_chart.html', 
+                  {'labels': labels,
+                   'data': data
+                   })
+    
+    
+def createResult(request, pk):
+    ResultFormSet = inlineformset_factory(Student, Result, fields=('subject', 'score', 'language', 'type', 'status'), extra=8)
+    student = Student.objects.get(id=pk)
+    formset = ResultFormSet(queryset=Result.objects.none(), instance=student)
+    #form = ResultsForm(initial={'student':student})
+    if request.method == 'POST':
+        form = ResultsForm(request.POST)
+        formset = ResultFormSet(request.POST, instance=student)
+        if formset.is_valid():
+            formset.save()
+            return redirect('student')
+    context = {'form':formset}
+    return render(request, 'website/results_form.html', context)
+
+def StudentClass(request, pk):
+    student = Student.objects.get(id=pk)
+    classroom = Classroom.objects.all()
+    
+    studentsperclass = classroom._student_set.all()
+    
+    context = {
+        'student': student,
+        'studentsperclass': studentsperclass,
+        'classroom': classroom
+    }
+    
+    return render(request, 'website/studentperclass.html', context)
